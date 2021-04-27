@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using static GraphsGenerator.Graph;
-
-namespace GraphsGenerator
+﻿namespace GraphsGenerator
 {
     public static class ConnectivityChecker
     {

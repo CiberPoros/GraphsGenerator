@@ -230,5 +230,39 @@ namespace GraphsGenerator
 
             return res;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is not Graph graph)
+            {
+                return false;
+            }
+
+            if (VertexCount != graph.VertexCount)
+            {
+                return false;
+            }    
+
+            for (int i = 0; i < AdjacencyVector.Count; i++)
+            {
+                if (AdjacencyVector[i] != graph.AdjacencyVector[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            var res = 0;
+            for (int i = 0; i < AdjacencyVector.Count; i++)
+            {
+                res ^= AdjacencyVector[i];
+            }
+
+            return res;
+        }
     }
 }

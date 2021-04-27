@@ -1,7 +1,8 @@
 {
   "profiles": {
     "GraphsGenerator": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-v 5 -g 2"
     }
   }
 }

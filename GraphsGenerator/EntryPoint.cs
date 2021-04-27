@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using CommandLine;
 
@@ -12,22 +13,26 @@ namespace GraphsGenerator
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(o => 
                 {
-                    var generator = new BruteForceGenerator();
-                    var result = generator.Generate(o.VertexCount).ToList();
-                    System.Console.WriteLine($"Total graphs count: {result.Count}.");
+                    IGenerator generator = IGenerator.CreateNew(o.GeneratorType);
+                    var startTime = DateTime.Now;
 
+                    var result = generator.Generate(o.VertexCount);
+                    
                     if (o.WriteGraphsToFile)
                     {
                         File.WriteAllLines(o.FileName, result);
-                        System.Console.WriteLine($"Graphs was written to \"{o.FileName}\" file.");
+                        Console.WriteLine($"Graphs was written to \"{o.FileName}\" file.");
                         return;
                     }
 
-                    System.Console.WriteLine("Graphs in g6 format: ");
+                    Console.WriteLine("Graphs in g6 format: ");
                     foreach (var g6 in result)
                     {
-                        System.Console.WriteLine(g6);
+                        Console.WriteLine(g6);
                     };
+
+                    Console.WriteLine($"Total graphs count: {result.Count()}.");
+                    Console.WriteLine($"Total calculating time in seconds: {(DateTime.Now - startTime).TotalSeconds}.");
                 });
         }
     }
