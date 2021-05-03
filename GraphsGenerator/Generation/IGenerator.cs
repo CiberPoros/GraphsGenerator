@@ -10,6 +10,7 @@ namespace GraphsGenerator
         {
             GeneratorType.GENERATOR_BY_CANONICAL_CODE => new GeneratorByCanonicalCode(),
             GeneratorType.BRUTE_FORCE_ALL_GRAPHS => new BruteForceAllGraphsGenerator(),
+            GeneratorType.BRUTE_FORCE_ALL_CODES => new BruteForceAllCodesGenerator(),
             _ => throw new System.NotImplementedException(),
         };
     }

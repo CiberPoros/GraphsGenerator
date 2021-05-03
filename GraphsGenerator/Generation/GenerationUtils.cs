@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphsGenerator
 {
@@ -24,6 +25,83 @@ namespace GraphsGenerator
                     }
 
                     longView >>= 1;
+                }
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<List<int>> EnumerateAllSubstitutions(Graph graph)
+        {
+            var n = graph.VertexCount;
+
+            var vertexNumbers = new int[n];
+            bool[] used = new bool[n];
+
+            return Enumerate(used, 0);
+
+            IEnumerable<List<int>> Enumerate(bool[] used, int deep)
+            {
+                if (deep == n)
+                {
+                    yield return vertexNumbers.ToList();
+                }
+
+                for (int i = 0; i < n; i++)
+                {
+                    if (used[i])
+                    {
+                        continue;
+                    }
+
+                    used[i] = true;
+                    vertexNumbers[deep] = i;
+
+                    foreach (var val in Enumerate(used, deep + 1))
+                        yield return val;
+
+                    used[i] = false;
+                }
+            }
+        }
+
+        public static List<int> UseSubstitution(List<int> vector, List<int> substitution)
+        {
+            var n = vector.Count;
+            var result = Enumerable.Repeat(0, n).ToList();
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0, jMask = 1; j < n; j++, jMask <<= 1)
+                {
+                    if ((vector[i] & jMask) == 0)
+                    {
+                        continue;
+                    }
+
+                    result[substitution[i]] |= 1 << substitution[j];
+                    result[substitution[j]] |= 1 << substitution[i];
+                }
+            }
+
+            return result;
+        }
+
+        public static long GetSimpleCode(List<int> vector)
+        {
+            var result = 0L;
+
+            var currentMask = 1;
+            for (int i = 0; i < vector.Count; i++)
+            {
+                for (int j = i + 1, jMask = 1 << (i + 1); j < vector.Count; j++, jMask <<= 1)
+                {
+                    if ((vector[i] & jMask) != 0)
+                    {
+                        result ^= currentMask;
+                    }
+
+                    currentMask <<= 1;
                 }
             }
 
