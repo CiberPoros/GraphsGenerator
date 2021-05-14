@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Numerics;
 
 namespace GraphsGenerator
 {
@@ -7,10 +6,8 @@ namespace GraphsGenerator
     {
         public IEnumerable<string> Generate(int vertexCount)
         {
-            Dictionary<BigInteger, string> graphs = new Dictionary<BigInteger, string>();
             var bitsCount = (int)(((vertexCount + .0) / 2) * (vertexCount - 1));
-
-            long limit = 1L << (bitsCount + 1);
+            long limit = 1L << (bitsCount);
             for (var i = 0L; i < limit; i++)
             {
                 var vector = GenerationUtils.ToAjentityVector(i, vertexCount);
@@ -21,11 +18,11 @@ namespace GraphsGenerator
                     continue;
                 }
 
-                var code = IsomorphismChecker.GetCon(graph);
+                var canonicalCode = IsomorphismChecker.GetCon(graph);
+                var simpleCode = GenerationUtils.GetBigIntegerSimpleCode(graph);
 
-                if (!graphs.ContainsKey(code))
+                if (canonicalCode == simpleCode)
                 {
-                    graphs.Add(code, graph.ToG6());
                     yield return graph.ToG6();
                 }
             }

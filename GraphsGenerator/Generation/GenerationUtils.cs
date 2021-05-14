@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace GraphsGenerator
 {
@@ -106,6 +107,25 @@ namespace GraphsGenerator
             }
 
             return result;
+        }
+
+        public static BigInteger GetBigIntegerSimpleCode(Graph g)
+        {
+            BigInteger bi = 0;
+            for (int i = 0; i < g.VertexCount - 1; i++)
+            {
+                for (int j = i + 1; j < g.VertexCount; j++)
+                {
+                    if ((g[i] & (1 << j)) > 0)
+                        bi++;
+
+                    bi <<= 1;
+                }
+            }
+
+            bi >>= 1;
+
+            return bi;
         }
     }
 }
