@@ -7,7 +7,7 @@ namespace GraphsGenerator
         [Option('v', "VertexCount", Required = true, HelpText = "Vertex count.")]
         public int VertexCount { get; set; }
 
-        [Option('g', "GeneratorType", Default = GeneratorType.GENERATOR_BY_CANONICAL_CODE, HelpText = "Generator type. 1 - use caconical code (default), 2 - brute force all graphs")]
+        [Option('g', "GeneratorType", Default = GeneratorType.BRUTE_FORCE_ALL_CODES_WITH_FILTER, HelpText = "Generator type. Value from [1..4]")]
         public GeneratorType GeneratorType { get; set; }
 
         [Option('w', "WriteToFile", Default = false, HelpText = "Print all graphs to file.")]
