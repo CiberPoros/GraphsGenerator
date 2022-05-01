@@ -16,7 +16,7 @@ namespace GraphsGenerator
                     IGenerator generator = IGenerator.CreateNew(o.GeneratorType);
                     var startTime = DateTime.Now;
 
-                    var result = generator.Generate(o.VertexCount);
+                    var result = generator.Generate(o.VertexCount, o.EdgesCount, o.ConnectedOnly);
                     
                     if (o.WriteGraphsToFile)
                     {

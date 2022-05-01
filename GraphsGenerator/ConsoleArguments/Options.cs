@@ -15,5 +15,11 @@ namespace GraphsGenerator
 
         [Option('f', "FileName", Default = "Graphs.txt", HelpText = "File name for writing graphs. Will be user if parameter -w is true.")]
         public string FileName { get; set; }
+
+        [Option('e', "EdgesCount", Default = null, HelpText = "Output only graphs with a given number of edges.")]
+        public int? EdgesCount { get; set; }
+
+        [Option('c', "ConnectedOnly", Default = false, HelpText = "Output only connected graphs.")]
+        public bool ConnectedOnly { get; set; }
     }
 }

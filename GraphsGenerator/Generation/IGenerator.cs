@@ -4,7 +4,7 @@ namespace GraphsGenerator
 {
     internal interface IGenerator
     {
-        IEnumerable<string> Generate(int vertexCount);
+        IEnumerable<string> Generate(int vertexCount, int? edgesCount = null, bool connectedOnly = true);
 
         public static IGenerator CreateNew(GeneratorType generatorType) => generatorType switch
         {
