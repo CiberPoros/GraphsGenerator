@@ -2,7 +2,7 @@
   "profiles": {
     "GraphsGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "-v 6 -g 4 -e 10 -c"
+      "commandLineArgs": "-v 7 -g 4 -c"
     }
   }
 }

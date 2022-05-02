@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphsGenerator
 {
@@ -10,7 +11,12 @@ namespace GraphsGenerator
         public IEnumerable<string> Generate(int vertexCount, int? edgesCount = null, bool connectedOnly = true)
         {
             var bitsCount = (int)(((vertexCount + .0) / 2) * (vertexCount - 1));
-            return EnumerateCodes(1L << (bitsCount - 1), bitsCount - 2, vertexCount, bitsCount, connectedOnly, edgesCount, 1);
+            var vectorEmptyGraph = GenerationUtils.ToAjentityVector(0, vertexCount);
+            var emptyGraph = new Graph(vectorEmptyGraph);
+
+            return connectedOnly 
+                ? EnumerateCodes(1L << (bitsCount - 1), bitsCount - 2, vertexCount, bitsCount, connectedOnly, edgesCount, 1)
+                : EnumerateCodes(1L << (bitsCount - 1), bitsCount - 2, vertexCount, bitsCount, connectedOnly, edgesCount, 1).Concat(new string[] { emptyGraph.ToG6() });
         }
 
         private IEnumerable<string> EnumerateCodes(long code, int position, int vertexCount, int bitsCount, bool connectedOnly, int? edgesCount, int deep = 1)
