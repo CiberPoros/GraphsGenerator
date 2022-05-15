@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -78,7 +79,7 @@ namespace GraphsGenerator
         {
             var n = graph.VertexCount;
 
-            var vertexNumbers = new int[n];
+            var vertexNumbers = Enumerable.Repeat(0, n).ToList();
             bool[] used = new bool[n];
 
             return Enumerate(used, 0);
@@ -89,21 +90,135 @@ namespace GraphsGenerator
                 {
                     yield return vertexNumbers.ToList();
                 }
-
-                for (int i = 0; i < n; i++)
+                else
                 {
-                    if (used[i])
+                    for (int i = 0; i < n; i++)
                     {
-                        continue;
+                        if (used[i])
+                        {
+                            continue;
+                        }
+
+                        used[i] = true;
+                        vertexNumbers[deep] = i;
+
+                        foreach (var val in Enumerate(used, deep + 1))
+                            yield return val;
+
+                        used[i] = false;
                     }
+                }
+            }
+        }
 
-                    used[i] = true;
-                    vertexNumbers[deep] = i;
+        public static IEnumerable<List<int>> EnumerateAllSubstitutionsNoCopy(Graph graph)
+        {
+            var n = graph.VertexCount;
 
-                    foreach (var val in Enumerate(used, deep + 1))
-                        yield return val;
+            var vertexNumbers = Enumerable.Repeat(0, n).ToList();
+            bool[] used = new bool[n];
 
-                    used[i] = false;
+            return Enumerate(used, 0);
+
+            IEnumerable<List<int>> Enumerate(bool[] used, int deep)
+            {
+                if (deep == n)
+                {
+                    yield return vertexNumbers;
+                }
+                else
+                {
+                    for (int i = 0; i < n; i++)
+                    {
+                        if (used[i])
+                        {
+                            continue;
+                        }
+
+                        used[i] = true;
+                        vertexNumbers[deep] = i;
+
+                        foreach (var val in Enumerate(used, deep + 1))
+                            yield return val;
+
+                        used[i] = false;
+                    }
+                }
+            }
+        }
+
+        [Obsolete]
+        public static IEnumerable<List<int>> EnumerateAllSubstitutionsAccelerated(long code, int vertexCount)
+        {
+            var vector = ToAjentityVector(code, vertexCount);
+            var degrees = new int[vector.Count];
+            for (int i = 0; i < vector.Count; i++)
+            {
+                degrees[i] = BitsMagicUtils.GetCountOfBitsInt(vector[i]);
+            }
+
+            var groups = new Dictionary<int, List<int>>();
+            for (int i = 0; i < degrees.Length; i++)
+            {
+                if (groups.ContainsKey(degrees[i]))
+                {
+                    groups[degrees[i]].Add(i);
+                }
+                else
+                {
+                    var list = new List<int>();
+                    list.Add(i);
+                    groups.Add(degrees[i], list);
+                }
+            }
+
+            var vertexNumbers = Enumerable.Repeat(0, vertexCount).ToList();
+            var used = new bool[vertexCount];
+            var groupsKeys = groups.Keys.OrderByDescending(x => x).ToArray();
+
+            return Enumerate(used, groupsKeys[0], groups[groupsKeys[0]]);
+
+            IEnumerable<List<int>> Enumerate(bool[] used, int group, List<int> groupVertexes, int currentGroupNumber = 0, int deep = 0, int deepTotal = 0)
+            {
+                if (deep == groups[group].Count)
+                {
+                    if (currentGroupNumber == (groupsKeys.Length - 1))
+                    {
+                        yield return vertexNumbers.ToList();
+                    }
+                    else
+                    {
+                        currentGroupNumber++;
+                        group = groupsKeys[currentGroupNumber];
+                        groupVertexes = groups[group];
+
+                        foreach (var next in Enumerate(used, group, groupVertexes, currentGroupNumber, 0, deepTotal))
+                        {
+                            yield return next;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < groupVertexes.Count; i++)
+                    {
+                        var vertex = groupVertexes[i];
+
+                        if (used[vertex])
+                        {
+                            continue;
+                        }
+
+                        used[vertex] = true;
+                        vertexNumbers[deepTotal] = vertex;
+
+                        foreach (var next in Enumerate(used, group, groupVertexes, currentGroupNumber, deep + 1, deepTotal + 1))
+                        {
+                            yield return next;
+                        }
+
+                        used[vertex] = false;
+                    }
                 }
             }
         }
@@ -124,6 +239,28 @@ namespace GraphsGenerator
 
                     result[substitution[i]] |= 1 << substitution[j];
                     result[substitution[j]] |= 1 << substitution[i];
+                }
+            }
+
+            return result;
+        }
+
+        public static List<int> UseSubstitutionInverted(List<int> vector, List<int> substitution)
+        {
+            var n = vector.Count;
+            var result = Enumerable.Repeat(0, n).ToList();
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0, jMask = 1; j < n; j++, jMask <<= 1)
+                {
+                    if ((vector[i] & jMask) == 0)
+                    {
+                        continue;
+                    }
+
+                    result[substitution.IndexOf(i)] |= 1 << substitution.IndexOf(j);
+                    result[substitution.IndexOf(j)] |= 1 << substitution.IndexOf(i);
                 }
             }
 

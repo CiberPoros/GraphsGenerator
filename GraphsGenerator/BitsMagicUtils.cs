@@ -39,5 +39,22 @@
 
             return res;
         }
+
+        public static int GetCountOfBitsInt(int value)
+        {
+            if (_bitsCount is null)
+            {
+                InitBitsCount();
+            }
+
+            var res = 0;
+            while (value > 0)
+            {
+                res += _bitsCount[value & FullByteMask];
+                value >>= 8; // byte size
+            }
+
+            return res;
+        }
     }
 }

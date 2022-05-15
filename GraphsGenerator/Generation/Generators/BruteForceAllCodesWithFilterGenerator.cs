@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace GraphsGenerator
 {
     internal class BruteForceAllCodesWithFilterGenerator : IGenerator
     {
         readonly HashSet<long> _canonCodes = new();
-        readonly HashSet<long> _notCanonCodes = new();
 
         public IEnumerable<string> Generate(int vertexCount, int? edgesCount = null, bool connectedOnly = true)
         {
@@ -44,14 +42,6 @@ namespace GraphsGenerator
             }
         }
 
-        private bool CheckIsCanonByCanonCode(Graph graph, List<int> vector, int bitsCount)
-        {
-            var canonicalCode = IsomorphismChecker.GetCon(graph);
-            var simpleCode = GenerationUtils.GetBigIntegerMaxCode(graph, bitsCount);
-
-            return canonicalCode == simpleCode;
-        }
-
         private bool CheckIsCanonByBruteForce(Graph graph, List<int> vector, int bitsCount)
         {
             var startCode = GenerationUtils.GetMaxCode(vector, bitsCount);
@@ -61,37 +51,21 @@ namespace GraphsGenerator
                 return true;
             }
 
-            if (_notCanonCodes.Contains(startCode))
-            {
-                return false;
-            }
-
             var maxCode = startCode;
-
-            var codes = new HashSet<long>();
-
-            foreach (var substitution in GenerationUtils.EnumerateAllSubstitutions(graph))
+            foreach (var substitution in GenerationUtils.EnumerateAllSubstitutionsNoCopy(graph))
             {
                 var currentVector = GenerationUtils.UseSubstitution(vector, substitution);
                 var currentCode = GenerationUtils.GetMaxCode(currentVector, bitsCount);
-                
+
                 if (_canonCodes.Contains(currentCode))
                 {
                     return false;
                 }
 
-                codes.Add(currentCode);
-
                 if (currentCode > maxCode)
                 {
                     maxCode = currentCode;
                 }
-            }
-
-            codes.Remove(maxCode);
-            foreach (var code in codes)
-            {
-                _notCanonCodes.Add(code);
             }
 
             _canonCodes.Add(maxCode);
